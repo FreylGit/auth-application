@@ -5,6 +5,7 @@ import (
 	"context"
 	"errors"
 	"golang.org/x/crypto/bcrypt"
+	"time"
 )
 
 type Auth struct {
@@ -14,11 +15,15 @@ type Auth struct {
 	tokenService  TokenService
 }
 
+var (
+	ErrorExpiredToken = errors.New("token expired")
+)
+
 type UserSaver interface {
 	SaveUser(ctx context.Context, newUser models.User) (userId int64, err error)
 }
 type TokenProvider interface {
-	Refresh(ctx context.Context, userId int64, token string) (rToken string, err error)
+	Refresh(ctx context.Context, userId int64, token string) (rToken models.RefreshToken, err error)
 	SaveRefresh(ctx context.Context, userId int64, token string) error
 	UpdateRefresh(ctx context.Context, userId int64, newToken string, prevToken string) error
 }
@@ -63,6 +68,7 @@ func (a *Auth) RegistrationNewUser(ctx context.Context, newUser models.NewUser) 
 	if err != nil {
 		return nil, err
 	}
+
 	return &models.UserResponse{UserId: userId, RefreshToken: rtoken, AccessToken: atoken}, nil
 }
 
@@ -71,12 +77,15 @@ func (a *Auth) RefreshToken(ctx context.Context, userId int64, refreshToken stri
 	if err != nil {
 		return 0, "", "", err
 	}
+	if findRefresh.ExpDate.Before(time.Now()) {
+		return 0, "", "", ErrorExpiredToken
+	}
 	newRefresh := a.tokenService.CreateRefresh(userId)
 	user, err := a.userProvider.UserById(ctx, userId)
 	if err != nil {
 		return 0, "", "", err
 	}
-	err = a.tokenProvider.UpdateRefresh(ctx, userId, newRefresh, findRefresh)
+	err = a.tokenProvider.UpdateRefresh(ctx, userId, newRefresh, findRefresh.Token)
 	if err != nil {
 		return 0, "", "", err
 	}

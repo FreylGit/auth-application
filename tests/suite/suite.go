@@ -3,13 +3,13 @@ package suite
 import (
 	"auth-application/internal/config"
 	"context"
-	"fmt"
 	auth "github.com/FreylGit/protoModel/gen/go/auth"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"net"
 	"strconv"
 	"testing"
+	"time"
 )
 
 const grpcHost = "localhost"
@@ -23,23 +23,21 @@ type Suite struct {
 func New(t *testing.T) (context.Context, *Suite) {
 	t.Helper()
 	t.Parallel()
-
 	cfg := config.MustLoadByPath("../config/local.yaml")
-
-	ctx, cancelCtx := context.WithTimeout(context.Background(), 50000)
+	ctx, cancelCtx := context.WithTimeout(context.Background(), time.Second*100)
 
 	t.Cleanup(func() {
 		t.Helper()
 		cancelCtx()
 	})
 
-	cc, err := grpc.DialContext(context.Background(),
+	cc, err := grpc.DialContext(ctx,
 		grpcAddress(cfg),
 		grpc.WithTransportCredentials(insecure.NewCredentials())) // Используем insecure-коннект для тестов
 	if err != nil {
 		t.Fatalf("grpc server connection failed: %v", err)
 	}
-	fmt.Println("GGGGGGGOOOOODDDD")
+
 	return ctx, &Suite{
 		T:          t,
 		Cfg:        cfg,

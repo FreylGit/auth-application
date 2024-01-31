@@ -17,6 +17,7 @@ type App struct {
 func New(port int, aService *authService.Auth) *App {
 	grpcServer := grpc.NewServer()
 	auth.Register(grpcServer, aService)
+
 	return &App{
 		gRPCServer: grpcServer,
 		port:       port,
@@ -32,6 +33,7 @@ func (a *App) Run() error {
 	if err := a.gRPCServer.Serve(l); err != nil {
 		return err
 	}
+
 	return nil
 }
 

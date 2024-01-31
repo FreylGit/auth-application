@@ -23,5 +23,6 @@ func New(connectionString string) (*Storage, error) {
 	}
 
 	log.Println("Connected to the database")
+
 	return &Storage{db: db}, nil
 }

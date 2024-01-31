@@ -1,17 +1,18 @@
 package postgresql
 
 import (
+	"auth-application/internal/domain/models"
 	"auth-application/internal/storage"
 	"context"
 	"fmt"
 	"time"
 )
 
-func (s *Storage) Refresh(ctx context.Context, userId int64, token string) (rToken string, err error) {
+func (s *Storage) Refresh(ctx context.Context, userId int64, token string) (rToken models.RefreshToken, err error) {
 	//TODO: Добавить проверку на просрочку
 	smtp, err := s.db.Prepare("SELECT id,user_id,token,expired_date FROM refresh_tokens WHERE user_id = $1 AND token = $2")
 	if err != nil {
-		return "", fmt.Errorf("internal: %w", storage.ErrorSqlSyntax)
+		return models.RefreshToken{}, fmt.Errorf("internal: %w", storage.ErrorSqlSyntax)
 	}
 
 	row := smtp.QueryRowContext(ctx, userId, token)
@@ -21,10 +22,15 @@ func (s *Storage) Refresh(ctx context.Context, userId int64, token string) (rTok
 	var expDate time.Time
 	err = row.Scan(&id, &user_id, &findToken, &expDate)
 	if err != nil {
-		return "", fmt.Errorf("internal: %w", storage.ErrorScan)
+		return models.RefreshToken{}, fmt.Errorf("internal: %w", storage.ErrorScan)
 	}
 
-	return findToken, nil
+	return models.RefreshToken{
+		Id:      id,
+		UserId:  user_id,
+		Token:   findToken,
+		ExpDate: expDate,
+	}, nil
 }
 
 func (s *Storage) SaveRefresh(ctx context.Context, userId int64, token string) error {
@@ -32,7 +38,7 @@ func (s *Storage) SaveRefresh(ctx context.Context, userId int64, token string) e
 	if err != nil {
 		return fmt.Errorf("internal: %w", storage.ErrorSqlSyntax)
 	}
-	expiredDate := time.Now().Add(1000000)
+	expiredDate := time.Now().Add(time.Hour * 48)
 	res, err := smtp.ExecContext(ctx, userId, token, expiredDate.Format("2006-01-02"))
 	_ = res
 	if err != nil {
