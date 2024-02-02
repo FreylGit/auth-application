@@ -119,6 +119,26 @@ func TestRefreshToken_HappyPath(t *testing.T) {
 	assert.NotEmpty(t, aToken)
 }
 
+func TestRefreshToken_InvalidArguments(t *testing.T) {
+	ctx, st := suite.New(t)
+	email := gofakeit.Email()
+	pass := randomFakePassword()
+	name := gofakeit.Name()
+	respReg, err := st.AuthClient.Register(ctx, &auth.RegisterRequest{
+		Email:    email,
+		Password: pass,
+		Name:     name,
+	})
+	require.NoError(t, err)
+
+	rToken := respReg.GetRefreshToken()
+	invalidUserId := -1
+	resRef, err := st.AuthClient.Refresh(ctx, &auth.RefreshRequest{UserId: int64(invalidUserId), RefreshToken: rToken})
+	require.Error(t, err)
+	_ = resRef
+	assert.ErrorContains(t, err, "Invalid arguments")
+}
+
 func randomFakePassword() string {
 	return gofakeit.Password(true, true, true, true, false, passwordLength)
 }

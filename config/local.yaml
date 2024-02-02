@@ -2,7 +2,7 @@ env: "local"
 token_ttl: 2h
 secret: "testSecret"
 database:
-  host: "127.0.0.1"
+  host: "localhost"
   port: 6500
   username: "admin"
   password: "password123"
@@ -11,4 +11,3 @@ database:
 grpc:
   port: 20228
   timeout: 20s
-

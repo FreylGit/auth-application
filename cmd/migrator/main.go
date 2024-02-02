@@ -13,7 +13,8 @@ import (
 
 func main() {
 	var storagePath, migrationsPath, migrationsTable string
-	flag.StringVar(&storagePath, "storage-path", "", "path to storage")
+	flag.StringVar(&storagePath, "storage-path", "postgres://admin:password123@postgres:5432/AuthDatabase?sslmode=disable", "path to storage")
+
 	flag.StringVar(&migrationsPath, "migrations-path", "", "path to migrations")
 	flag.StringVar(&migrationsTable, "migrations-table", "migrations", "name of migrations table")
 	flag.Parse()

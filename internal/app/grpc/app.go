@@ -27,10 +27,14 @@ func New(port int, aService *authService.Auth) *App {
 func (a *App) Run() error {
 	l, err := net.Listen("tcp", fmt.Sprintf(":%d", a.port))
 	if err != nil {
+		fmt.Println(err)
 		return err
 	}
 	log.Printf("grpc server is running %s", l.Addr().String())
 	if err := a.gRPCServer.Serve(l); err != nil {
+		fmt.Println("port")
+		fmt.Println(a.port)
+		fmt.Println(err)
 		return err
 	}
 

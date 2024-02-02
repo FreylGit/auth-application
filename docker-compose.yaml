@@ -9,6 +9,7 @@ services:
       - progresDB:/data/postgres
     env_file:
       - ./app.env
+
   pgAdmin:
     image: dpage/pgadmin4
     container_name: pgAdminPR
@@ -16,5 +17,17 @@ services:
       - ./app.env
     ports:
       - "5050:80"
+
+  your_server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"  # Порты сервера
+    depends_on:
+      - postgres
+    volumes:
+      - ./config/local.yaml:/app/config/local.yaml  # Конфиг
+
 volumes:
   progresDB:

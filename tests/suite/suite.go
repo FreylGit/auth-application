@@ -23,7 +23,7 @@ type Suite struct {
 func New(t *testing.T) (context.Context, *Suite) {
 	t.Helper()
 	t.Parallel()
-	cfg := config.MustLoadByPath("../config/local.yaml")
+	cfg := config.MustLoadByPath("../config/dev.env")
 	ctx, cancelCtx := context.WithTimeout(context.Background(), time.Second*100)
 
 	t.Cleanup(func() {
