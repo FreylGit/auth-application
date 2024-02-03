@@ -18,7 +18,7 @@ services:
     ports:
       - "5050:80"
 
-  your_server:
+  auth_application:
     build:
       context: .
       dockerfile: Dockerfile
@@ -26,8 +26,7 @@ services:
       - "8000:8000"  # Порты сервера
     depends_on:
       - postgres
-    volumes:
-      - ./config/local.yaml:/app/config/local.yaml  # Конфиг
+
 
 volumes:
   progresDB:
