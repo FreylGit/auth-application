@@ -9,7 +9,6 @@ import (
 )
 
 func (s *Storage) Refresh(ctx context.Context, userId int64, token string) (rToken models.RefreshToken, err error) {
-	//TODO: Добавить проверку на просрочку
 	smtp, err := s.db.Prepare("SELECT id,user_id,token,expired_date FROM refresh_tokens WHERE user_id = $1 AND token = $2")
 	if err != nil {
 		return models.RefreshToken{}, fmt.Errorf("internal: %w", storage.ErrorSqlSyntax)

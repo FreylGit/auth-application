@@ -4,6 +4,7 @@ import (
 	"auth-application/internal/domain/models"
 	"context"
 	"errors"
+	"fmt"
 	"golang.org/x/crypto/bcrypt"
 	"time"
 )
@@ -16,7 +17,8 @@ type Auth struct {
 }
 
 var (
-	ErrorExpiredToken = errors.New("token expired")
+	ErrorExpiredToken     = errors.New("token expired")
+	ErrorEmailAndPassword = errors.New("failed input email or password")
 )
 
 type UserSaver interface {
@@ -102,8 +104,7 @@ func (a *Auth) Login(ctx context.Context, email string, password string) (*model
 
 	err = bcrypt.CompareHashAndPassword(user.PasswordHash, []byte(password))
 	if err != nil {
-		//TODO: Добавить эту ошибку в список ошибок
-		return nil, errors.New("failed input email or password")
+		return nil, fmt.Errorf("%w", ErrorEmailAndPassword)
 	}
 	atoken := a.tokenService.NewAccess(*user)
 	rtoken := a.tokenService.CreateRefresh(user.Id)

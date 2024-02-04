@@ -2,6 +2,7 @@ package auth
 
 import (
 	"auth-application/internal/domain/models"
+	"auth-application/internal/service/auth"
 	"auth-application/internal/storage"
 	"context"
 	"errors"
@@ -59,6 +60,9 @@ func (s *serverApi) Register(ctx context.Context, req *ath.RegisterRequest) (*at
 func (s *serverApi) Login(ctx context.Context, req *ath.LoginRequest) (*ath.LoginResponse, error) {
 	res, err := s.auth.Login(ctx, req.GetEmail(), req.GetPassword())
 	if err != nil {
+		if errors.Is(err, auth.ErrorEmailAndPassword) {
+			return nil, status.Errorf(codes.InvalidArgument, "Failed email or password")
+		}
 		return nil, status.Errorf(codes.Unauthenticated, "error auth")
 	}
 
