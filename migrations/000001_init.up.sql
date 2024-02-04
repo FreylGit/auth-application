@@ -4,7 +4,6 @@ CREATE TABLE IF NOT EXISTS users
     email varchar(256) UNIQUE,
     password_hash bytea NOT NULL,
     name character varying(256),
-    date_of_birth date,
     create_date date DEFAULT CURRENT_DATE
 );
 

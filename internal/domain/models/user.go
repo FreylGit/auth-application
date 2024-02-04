@@ -8,14 +8,12 @@ type User struct {
 	Name         string
 	PasswordHash []byte
 	CreateDate   time.Time
-	DateOfBirth  time.Time
 }
 
 type NewUser struct {
-	Email       string
-	Name        string
-	Password    string
-	DateOfBirth time.Time
+	Email    string
+	Name     string
+	Password string
 }
 
 type UserResponse struct {

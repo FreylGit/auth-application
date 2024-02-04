@@ -9,7 +9,6 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"time"
 )
 
 type Auth interface {
@@ -34,10 +33,9 @@ func (s *serverApi) Register(ctx context.Context, req *ath.RegisterRequest) (*at
 		return nil, status.Errorf(codes.InvalidArgument, "invalid params")
 	}
 	newUser := models.NewUser{
-		Email:       req.GetEmail(),
-		Password:    req.GetPassword(),
-		Name:        req.GetName(),
-		DateOfBirth: time.Date(2001, 7, 9, 0, 0, 0, 0, time.UTC),
+		Email:    req.GetEmail(),
+		Password: req.GetPassword(),
+		Name:     req.GetName(),
 	}
 	rspModel, err := s.auth.RegistrationNewUser(ctx, newUser)
 	if err != nil {
